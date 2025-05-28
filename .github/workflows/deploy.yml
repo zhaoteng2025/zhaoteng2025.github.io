@@ -15,5 +15,6 @@ jobs:
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GH_PAT }} # 使用你创建的 PAT
           publish_dir: ./output
+          branch: gh-pages  # 可选，默认就是 gh-pages
