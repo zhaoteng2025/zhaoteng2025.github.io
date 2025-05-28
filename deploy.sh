@@ -16,15 +16,15 @@ git add .
 git commit -m "Update site"
 
 # 推送到 GitHub Pages
-# git push -f https://github.com/xttgithub/xttgithub.github.io.git master:gh-pages
+# git push -f https://github.com/zhaoteng2025/zhaoteng2025.github.io.git main:gh-pages
 
 # 检查远程仓库地址
 if ! git remote get-url origin &>/dev/null; then
-    git remote add origin https://github.com/xttgithub/xttgithub.github.io.git
+    git remote add origin https://github.com/zhaoteng2025/zhaoteng2025.github.io.git
 fi
 
 # 推送到 GitHub Pages
-git push -f origin master:gh-pages || {
+git push -f origin main:gh-pages || {
     echo "推送失败，请检查远程仓库地址和权限";
     exit 1;
 }

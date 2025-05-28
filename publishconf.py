@@ -5,7 +5,7 @@ sys.path.append(os.curdir)
 from pelicanconf import *
 
 # 生产环境设置
-SITEURL = 'https://xtt.github.com'
+SITEURL = 'https://zhaoteng.github.com'
 RELATIVE_URLS = False
 
 # 静态文件

@@ -37,7 +37,7 @@ MENUITEMS = (
     ('标签', '/tags.html'),
 )
 COPYRIGHT_NAME = '赵腾'
-COPYRIGHT_YEAR = 2024
+COPYRIGHT_YEAR = 2025
 
 # 文章和页面的 URL 格式
 ARTICLE_URL = '{date:%Y}/{date:%m}/{slug}.html'
@@ -54,7 +54,7 @@ DISQUS_SITENAME = 'your-disqus-sitename'
 
 # 社交链接
 SOCIAL = (
-    ('GitHub', 'https://github.com/xttgithub'),
+    ('GitHub', 'https://github.com/zhaoteng2025'),
 )
 
 # 额外的元数据
@@ -64,5 +64,5 @@ DEFAULT_PAGINATION = 10
 RELATIVE_URLS = False
 
 # GitHub Pages 配置
-GITHUB_URL = 'https://github.com/xttgithub/xtt.github.io'
+GITHUB_URL = 'https://github.com/zhaoteng2025/zhaoteng2025.github.io'
 
