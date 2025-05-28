@@ -1,0 +1,97 @@
+# 编译输出
+*.pyc
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+*.egg-link
+__pycache__/
+
+# 虚拟环境
+venv/
+.virtualenv/
+.venv/
+env/
+.conda/
+conda_env.yaml
+
+# PyCharm 生成的文件
+.idea/
+*.iml
+*.ipr
+*.iws
+*.log
+*.tmp
+*.swp
+*.swo
+*.swn
+*.bak
+*.lock
+
+# 缓存文件
+*.cache
+*.pyc
+*.pyo
+*.egg-info/
+*.egg-link
+__pycache__/
+
+# 日志文件
+logs/
+*.log
+*.csv
+*.dat
+*.out
+*.err
+*.pid
+
+# 测试输出
+test-reports/
+coverage/
+*.coverage
+*.cover
+.htmlcov/
+
+# 临时文件
+*.tmp
+*.bak
+*.swp
+*.swo
+*.swn
+*.lock
+*.log
+*.pid
+*.dump
+*.core
+
+# 编辑器生成的文件
+*.sublime-project
+*.sublime-workspace
+*.tmLanguage
+*.tmTheme
+*.sublime-snippet
+*.eslintrc
+*.eslintignore
+*.jshintrc
+*.editorconfig
+
+# 其他
+
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+yarn.lock
+
+# Docker
+.dockerignore
+Dockerfile
+docker-compose.yml
+
+# 缓存文件
+.cache/
+.cachedir/
+
+
+
