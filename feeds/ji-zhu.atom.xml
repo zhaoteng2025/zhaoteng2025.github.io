@@ -1,0 +1,686 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>小腾腾的小站 - 技术</title><link href="https://xtt.github.com/" rel="alternate"></link><link href="https://xtt.github.com/feeds/ji-zhu.atom.xml" rel="self"></link><id>https://xtt.github.com/</id><updated>2025-05-28T16:00:00+08:00</updated><subtitle>记录技术，分享经验</subtitle><entry><title>RAG</title><link href="https://xtt.github.com/2025/05/rag.html" rel="alternate"></link><published>2025-05-28T16:00:00+08:00</published><updated>2025-05-28T16:00:00+08:00</updated><author><name>赵腾</name></author><id>tag:xtt.github.com,2025-05-28:/2025/05/rag.html</id><content type="html">&lt;h1&gt;简介&lt;/h1&gt;
+&lt;p&gt;todo&lt;/p&gt;
+&lt;h1&gt;核心内容&lt;/h1&gt;
+&lt;p&gt;todo&lt;/p&gt;
+&lt;h1&gt;总结&lt;/h1&gt;
+&lt;p&gt;todo&lt;/p&gt;</content><category term="技术"></category><category term="AI"></category><category term="RAG"></category></entry><entry><title>关于 RAG、AI Agent、多模态的理解与探索</title><link href="https://xtt.github.com/2025/03/guan-yu-rag-ai-agent-duo-mo-tai-de-li-jie-yu-tan-suo.html" rel="alternate"></link><published>2025-03-27T16:00:00+08:00</published><updated>2025-03-27T16:00:00+08:00</updated><author><name>赵腾</name></author><id>tag:xtt.github.com,2025-03-27:/2025/03/guan-yu-rag-ai-agent-duo-mo-tai-de-li-jie-yu-tan-suo.html</id><summary type="html">&lt;p&gt;&lt;img alt="27-1.png" src="../../../images/2025/03/27-1.png"&gt;&lt;/p&gt;
+&lt;h1&gt;简介&lt;/h1&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Agent 并非独立存在，而是依赖于其他技术的融合。
+首先是私域数据，它对 Agent 来说，保证了输入源的处理。如果输入源处理不 …&lt;/p&gt;&lt;/blockquote&gt;</summary><content type="html">&lt;p&gt;&lt;img alt="27-1.png" src="../../../images/2025/03/27-1.png"&gt;&lt;/p&gt;
+&lt;h1&gt;简介&lt;/h1&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Agent 并非独立存在，而是依赖于其他技术的融合。
+首先是私域数据，它对 Agent 来说，保证了输入源的处理。如果输入源处理不佳，就会导致 Agent 的性能下降；
+其次，Agent 技术基于大模型，大模型能力的提升会直接影响 Agent 的性能。但 Agent 也有缺点，比如增加系统的延时，这可以通过语义缓存技术来处理；
+另外，无论是基于 Agent 还是基于 AI 的新技术，都为测试带来了新的挑战。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1&gt;核心内容&lt;/h1&gt;
+&lt;h2&gt;私域数据的分割、召回与评估&lt;/h2&gt;
+&lt;p&gt;私域数据主要解决两个问题。首先是如何有效地将企业数据输入大语言模型。
+大语言模型的上下文处理能力是有限的，需要智能地选择数据以适应这一限制；
+其次，即使可以将全部数据放入模型的上下文，也不一定是最佳选择。
+最新的研究显示，大模型在处理上下文数据时效率呈 U 型曲线，意味着全量数据输入并非最优方案。
+&lt;img alt="27-2.png" src="../../../images/2025/03/27-2.png"&gt;&lt;/p&gt;
+&lt;p&gt;在 RAG 宏观层面，可以分为两个步骤。
+第一步是将数据化整为零存入数据库；
+第二步则是从数据库中进行召回，召回的结果作为 LLM 的上下文输入。这个分割过程本质上是将 M 个文件或文档映射为 N 个 Embedding。
+分割策略有多种，包括分隔符分割、均匀分割，甚至更复杂的以文档或段落为单位的树结构方式。
+在这里，主要考虑三个因素：分割的颗粒度，以及分割作为前置步骤的影响，因为它会影响后续召回模块的性能。
+&lt;img alt="27-3.png" src="../../../images/2025/03/27-3.png"&gt;&lt;/p&gt;
+&lt;p&gt;召回环节在 RAG 系统中至关重要，其核心主要包括三个方面：
+首先，务必遵循大语言模型（LLM）所要求的上下文硬性约束，这体现为将 n 个 Embedding 与单个上下文建立多对一的有效映射关系。
+其次，力求在召回过程中最大限度地保留原始上下文信息的完整性，避免信息失真。
+再者，要确保拼接生成的上下文语义连贯、流畅，因为任何语境上的不连贯都可能对 LLM 的理解与输出产生困扰，并诱发各类潜在问题。
+此外，在此模块中，还可巧妙运用 LLM 以提升或辅助召回效果。&lt;/p&gt;
+&lt;p&gt;召回模块主要包含检索、排序与生成三大功能，并可根据实际应用需求选择是否采用生成模块。这些功能均可通过小模型或大语言模型进行优化强化。
+针对检索环节，尽管普遍采用向量检索法，但在某些情况下，其性能表现可能基础且不稳定。以我们的实践为例，
+运用 OpenAI 的 Ada embedding 进行向量检索时，在特定场景下效果不尽人意。
+因此，为了提升检索效率与准确性，可探索多种策略：
+一方面，可以采取向量进行初步筛选（粗排），继而运用大语言模型（如 LLM）或其他专业模型进行精细排序（精排）；
+另一方面，也可整合传统检索技术如 BM25，构建混合检索体系。
+此外，更为先进的方法如 HYDE 也值得关注，它不直接使用用户原始查询进行检索，而是可能先经由 LLM 对查询语句进行加工处理，
+随后利用经过 LLM 处理后的答案作为检索依据，从而实现更为精准有效的信息检索。&lt;/p&gt;
+&lt;p&gt;在排序环节，除了考虑语义相似度外，还需要综合考虑相关性、时效性和重要性。排序模块也可以使用排序模型。最后是生成模型，
+这是一个可选模块，用于在获得片段后生成更流畅的上下文，有时会调用 LLM 进行润色。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="27-4.png" src="../../../images/2025/03/27-4.png"&gt;
+针对 RAG（Retrieve-And-Generate）模型的评估，我们可以将其评估指标划分为三类：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;传统检索指标：诸如 MMR 和 NDCG 等，尽管广泛应用于衡量检索系统的输出质量和排序效果，但在评价 RAG 这类新型检索生成模型时，
+因其无法全面反映检索性能而存在局限性。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;端到端测试：在早期阶段，当各组件性能尚待完善时，可将 RAG 与语言模型（LM）作为一个整体系统进行评估，
+通过用户查询和标准答案对比来衡量 LM 生成的答案质量。但此类测试方法的问题在于其难以精准定位改进点，
+即区分是 RAG 检索能力不足还是 LLM 回答问题的能力欠佳，且该评估方式较为粗略。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;创新的 RAgas 方法：引入了一种新颖策略，即利用高度智能化的 LLM 作为评估工具，能够细致地评判上下文与问题、
+答案与上下文及答案与问题之间的相关性，从而提供更深入、准确的评估结果。相较于前两者，这一方法有可能减少对人工标注的依赖，
+实现有效且精细的端到端测试。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img alt="27-5.png" src="../../../images/2025/03/27-5.png"&gt;
+召回方法、数据分割大小和 Top-k 选择是影响 RAG 性能的关键超参数，它们需通过实验调优来确定最佳设置。
+有时候，基于向量空间的搜索可能不够精确，此时结合 BM25 算法能有效提升搜索准确性。&lt;/p&gt;
+&lt;p&gt;在排序方面，RAG 系统输出的排序结果与后续调用的大型语言模型（LLM）紧密相关。不同 LLM 对排序敏感度有显著差异。
+例如，仅解码器（Decoder only）架构的 LLM，如 Google 的 PaLLM2 模型，对排序顺序的依赖度比 GPT-4 更高，
+排序误差可能导致 PaLLM 处理失败，而 GPT-4 则更具容错性。为了提升系统性能，Prompt Engineering 技术可以被应用，
+允许查询（Query）同时位于上下文的前部和后部。最终，召回阶段的排序考量不应仅限于语义相似度，而需要综合多维度因素进行优化。&lt;/p&gt;
+&lt;h2&gt;AI Agent&lt;/h2&gt;
+&lt;p&gt;AI Agent，也可喻为“角色框架”，是一种编程范式，其核心在于赋予大型语言模型（如 LLM）一种解决问题的策略性思维结构。
+此框架模拟了人类处理问题的流程：角色设定模块对应对环境背景的理解与认知；规划模块则负责任务的拆解与策略制定；
+内存模块承载着自我状态的操作与管理；而动作模块则执行最终的决策行为。尤为突出的是，AI Agent 通过这种架构，
+使得在 LLM 环境中实现群体智能的模拟与构建成为可能，为那些寻求群体智能编程途径的研究者提供了极大便利。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="27-6.png" src="../../../images/2025/03/27-6.png"&gt;
+在无 Agent 介入时，用户的查询与外部知识一并输入至 LLM，由其直接生成答案；然而，当引入 Agent 后，其可在回应前进行策略规划，
+并能在完成后独立解决相关子任务，或调动人类预设的工具资源，从而构建了一个涵盖规划、执行及反馈的智能决策循环。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="27-8.png" src="../../../images/2025/03/27-8.png"&gt;
+在探讨规划模块时，我们可以将 AI Agent 划分为两种架构类型：开环系统与闭环系统。开环系统的特点在于当前行动步骤的结果并不会对
+后续的规划产生影响，例如，思维链可被视为典型的开环系统，因其遵循线性执行路径且无反馈机制。相较于开环系统，更为先进的一种技术
+体现为多路径系统，这种设计灵感来源于人类在解决问题时会从多个角度思考的思维方式。其中，self-consistency 策略特别关注当多种
+不同思路可能导向相同结论的情况。然而，值得注意的是，存在一种在开环系统中频繁调用 LLM 的方法，但根据个人实践观察，
+此法的性价比相对较低，原因在于反复调用 LLM 会导致成本及响应时间的上升，相比之下，直接采用闭环系统则更具效率优势。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="27-9.png" src="../../../images/2025/03/27-9.png"&gt;
+AI Agent 本质上是一个闭环系统，其规划的每个步骤都受到之前步骤的影响。这种闭环性质意味着 Agent 会多次调用大型语言模型（LLM），
+并且对内存的管理更为复杂。以下是几个代表性的闭环系统实例：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="k"&gt;Self&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;ask&lt;/span&gt;&lt;span class="err"&gt;：&lt;/span&gt;&lt;span class="nx"&gt;基于&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;Chain&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;of&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;Thought&lt;/span&gt;&lt;span class="err"&gt;（&lt;/span&gt;&lt;span class="nx"&gt;COT&lt;/span&gt;&lt;span class="err"&gt;）&lt;/span&gt;&lt;span class="nx"&gt;理念&lt;/span&gt;&lt;span class="err"&gt;，&lt;/span&gt;&lt;span class="nx"&gt;并加入了一系列后续问题&lt;/span&gt;&lt;span class="err"&gt;，&lt;/span&gt;&lt;span class="nx"&gt;以此实现闭环&lt;/span&gt;&lt;span class="err"&gt;。&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ol&gt;
+&lt;li&gt;ReAct：作为一个典型的闭环系统，其挑战在于在进行局部规划时，可能会逐渐偏离最初的目标，导致目标遗忘。&lt;/li&gt;
+&lt;li&gt;Plan &amp;amp; Solve：与 ReAct 有相似之处，但它从一开始就由 LLM 进行全局规划，减少了目标漂移的可能性。&lt;/li&gt;
+&lt;li&gt;Reflection：特别注重内存操作的细化，区分短期记忆和长期记忆，每类记忆被不同角色使用，有助于实现群体智能。 
+这种方法因内存操作复杂性而独树一帜，内存的形态决定了编写 prompt 的方式，无论是向量、字符串还是 SQL 数据库形式。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img alt="27-10.png" src="../../../images/2025/03/27-10.png"&gt;
+处理内存时，主要关注三个方面：内存内容的检索、数据去重及内存满载时的数据简化。内存类型差异影响着编程策略，故此环节至关重要。
+行动模块大致可分为两类函数执行方式：一类由人类编写，具有严格定义的 API 与输入参数；另一类则直接调用 LLM 自身的能力，
+其函数调用相当于自我引用。在函数选择过程中，虽借鉴了 RAG 的部分理念，但有所不同。RAG 中的函数排序基于算法和相似度标准，
+通常不可随意调整；而在我们的系统中，若无特定优先级设定，函数排序可变且实践证明调整排序顺序对性能有所助益。然而，在实际应用中，
+行动模块在调用人类编写的函数时可能遭遇异常情况。这类函数要求固定且结构化的输入，与 LLM 产生的非结构化字符串输出之间需进行转换，
+例如转化为 JSON 或字典格式。这一转化过程易出现错误，如括号缺失等问题。同样，函数返回结果的结构化处理亦是挑战，确保其能够被有效
+利用于人类函数和 LLM 函数间的交互，而非局限于 LLM 内部循环。当前，该模块在鲁棒性上尚存缺陷。值得庆幸的是，GPT-4-Turbo 
+在 JSON 格式生成的稳定性上有所提升。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="27-11.png" src="../../../images/2025/03/27-11.png"&gt;
+在评估 Agent 时，存在三种核心评估策略。首当其冲的是针对冷启动阶段的评估，此时由于缺乏充足的数据和经验，
+可以通过人工评分或图形测试等方式进行评价，基准对比主要包括向下对齐（对比启用 Agent 前后的效果差异）
+和向上对齐（与人类表现相比较）。&lt;/p&gt;
+&lt;p&gt;在积累一定数据后，Agent 的评估会根据应用场景的具体需求而定。例如，在文档自动化场景下，针对分类任务或关键信息抽取任务，
+可采用端到端固定指标衡量 Agent 带来的性能提升。&lt;/p&gt;
+&lt;p&gt;而在评估 Agent 的泛化能力时，常利用如 Alfworld、HotpotQA、FEVER、HumanEval 等经典数据集，它们涵盖了对决策制定、
+多跳问答、分类及编码等多种能力的考察。现今趋势倾向于将 Agent 视为 LLM 进行评估，广泛采用如清华大学提供的 Agent Bench 
+和 Tool Bench 等综合型数据集进行测试。&lt;/p&gt;
+&lt;p&gt;至于 Agent 的工程性能评估，关键考量指标包括平均错误率以及在执行同样任务时，比较两个 Agent 的平均 LLM 调用次数以洞察其成本效益。
+此外，延时也是一个重要维度，因为它揭示了即使调用次数相近，频繁的小规模调用与一次性大规模调用可能会带来不同的响应延迟。&lt;/p&gt;
+&lt;p&gt;经过多框架对比测试，Plan &amp;amp; solve 法展现出最优性能。然而，三种闭环系统的共性问题在于工具选择阶段的易错性，针对此问题，
+可通过随机化工具列表以规避 LLM 在处理上下文时可能出现的 U 型曲线偏差。&lt;/p&gt;
+&lt;p&gt;在工程编码实践上，首选方案为运用 Lang chain 技术进行 Agent 首轮迭代开发，因其具有高效的实现速度和初步构建效能。
+但须留意，Lang chain 架构存在隐忧，其可能产生的冗余代码及各版本间显著的变化，或将在后期维护与扩展性方面带来难题。&lt;/p&gt;
+&lt;p&gt;此外，Marvin 库在整合人类定义函数与大型语言模型（LLM）函数的应用中展现了独特价值。该库通过提供简洁清晰的接口设计，
+有效降低了 LLM 函数编程的复杂度，从而提升集成效率。&lt;/p&gt;
+&lt;h2&gt;多模态&lt;/h2&gt;
+&lt;p&gt;现在讨论到 Agent，特别是基于底座大模型的 Agent，我认为当前最热门的是这些模型的多模态能力。在文档智能领域，我们尝试了一些多模态模型，
+特别是针对文字密集型文档。我们想知道现有的原生多模态模型能力如何，能否省去 OCR 这一步骤。因为 OCR 步骤非常繁琐，如果使用纯文本 LLM 
+处理文件自动化，通常首先需要做 OCR。OCR 之后，还需要进行文本序列化，而这一步很难泛化。例如，如果有一个表格，它的表头是按照一定格式排列的，
+但如果这个表格信息没有正确传入到 LLM 里面，按照人类从上到下、从左到右的阅读顺序处理，表头的识别就会完全错误。这样的错误会对后续的信息提取和性能产生很大影响。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="27-12.png" src="../../../images/2025/03/27-12.png"&gt;
+传统提升模型性能的策略常依赖于模型堆叠，但这会增加系统复杂度与延迟，并未根本解决泛化性问题。因此，研究者开始探索多模态融合技术。
+其中，一种典型的方法是将图像或文档经过 encoder 转化为向量表示，再通过 adaptation 技术将其映射至大规模语言模型（LLM）
+的空间中进行处理，这一系列过程被称为“高效微调”。&lt;/p&gt;
+&lt;p&gt;此类高效微调技术如 Lora、LLAMA、adept 和 prompt tuning 等，虽已取得一定成效，但也存在局限性。首先，这类方法在闭源 
+API 环境下难以应用，仅能在开源系统中实施。其次，研究表明，在信息提取任务上，这些方法的表现并不尽如人意，尤其是在处理文字
+密集型文档时。原因在于，当前图像 encoder 的分辨率普遍较低，非多尺度设计，如常见分辨率 338x338，导致在提取高密度文字信
+息时，因分辨率不足造成大量信息丢失。此外，此类微调方式并非端到端训练，而是采用两阶段微调机制，这也可能影响其性能表现。&lt;/p&gt;
+&lt;p&gt;在 OCR 领域，华中科技大学的研究成果显著。针对信息提取任务中的多模态模型在 KIE（关键信息抽取）上的不足，近期涌现的一些新型多模态模型提供了新的解决思路。
+诸如 Facebook 的 Nougat 模型等小型多模态 seq2seq 结构模型，通过将图像信息转化为 HTML 或 Markdown 源码，有效缓解了序列化难题，因其保留了二维布局信息。&lt;/p&gt;
+&lt;p&gt;此类模型能够对接开源或闭源的大规模语言模型（LLM），通过前端训练和微调实现应用。此外，部分高分辨率的预训练开源模型也展现出优势。然而，它们存在的问题是，
+许多预训练模型基于学术论文数据集训练，主要对应 LaTeX 格式，而面对商业文档时，由于其 HTML 标签识别难度较高，导致标注成本增加。&lt;/p&gt;
+&lt;h2&gt;语义缓存技术&lt;/h2&gt;
+&lt;p&gt;&lt;img alt="27-13.png" src="../../../images/2025/03/27-13.png"&gt;
+在我们的多模态研究中，为应对 Agent 提升时延的问题，引入了一种名为“语义缓存”的策略，该技术显著降低了调用延迟，实现了一个数量级以上的优化。语义缓存本质上是一种
+工程实践，与现有绝对匹配缓存机制（如 KV cache）相融合。当绝对匹配未命中时，系统运用向量数据库进行语义层面的检索，并结合元数据及置信度 top k 筛选以判断缓存
+是否有效。在此过程中，若发生命中的情况，则会在 eviction manager 中进行记录。&lt;/p&gt;
+&lt;p&gt;然而，在运用语义缓存技术时，必须留意到其内在的权衡特性：缓存命中率与搜索精确度之间存在着动态平衡。高命中率可能导致精确度一定程度的下滑，因为这涉及到概率性问题，
+需寻找适宜的操作点。&lt;/p&gt;
+&lt;p&gt;此外，我们力求利用元数据对搜索结果进行精细化过滤，例如面对相同查询但在不同来源渠道（比如 APP 端与网页端）下可能出现差异化的响应，这就凸显了属性过滤功能的重要性。
+为此，建议采用兼容 Hyperd search 的向量数据库，以便在调用时能自动执行此类精细化处理操作。&lt;/p&gt;
+&lt;p&gt;在采用语义缓存时，必须重视缓存一致性问题，特别是在企业环境下，若 KV cache 与向量数据库由不同团队管理，可能出现如 TTL 配置失误等状况，导致缓存数据不一致，
+进而使用户接收到错误结果且系统无法有效记录此类问题。此外，确保并行化处理的安全性至关重要，例如 eviction manager 应具备线程安全性以保证系统稳定高效运行。&lt;/p&gt;
+&lt;p&gt;实现语义缓存的目标在于构建统一的缓存架构，这意味着在数据库中仅保存一份缓存副本，而非多份。为此，需要自上而下进行精心设计，包括精确定义 key 及规划表结构，
+并明确与 eviction manager 交互的角色。&lt;/p&gt;
+&lt;p&gt;对于初次涉足向量数据库或语义缓存应用的开发者，我推荐一款名为 GPTCache 的开源库，它支持多种向量数据库与其他数据库的整合对接，有助于简化操作流程，提高开发效率。&lt;/p&gt;
+&lt;p&gt;在当今 Agent 与 LLM 技术广泛应用的时代，客服机器人的测试面临着更高的复杂性和挑战。除了确保业务问题解答的准确性外，还需严防其回复非相关问题，以免损害公司形象与声誉。
+针对 Agent 的测试流程中，我们需要预先设定并强化合规性规则，尽管如此，即便采取多重约束，Agent 仍可能出现非预期回复，这时可能需要借助小型模型对 LLM 输出结果进行过滤，
+以防止潜在违规内容的出现。同时，有效识别和规避用户的越界行为，尤其是检测模型生成内容中的幻觉现象，这一问题至今尚无理想的解决方案，亟待业界共同研究探索。&lt;/p&gt;
+&lt;p&gt;从评测角度看，传统的依赖人工标注的测试方式已无法满足需求，有必要开发专门的自动打分模型，或者运用高性能 LLM 作为评判者角色，通过 Agent 机制参与测试过程，
+专注于对 hallucination、groudness 等问题的评估。&lt;/p&gt;
+&lt;h1&gt;总结&lt;/h1&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;RAG 模型中的私域数据处理和召回环节至关重要，需要智能地选择数据以适应大语言模型的限制，并确保在召回过程中保留原始上下文信息的完整性。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;RAG 模型的召回方法、数据分割大小和 Top-k 选择是影响性能的关键超参数，需要通过实验调优来确定最佳设置，有时需要结合 BM25 算法来提升搜索准确性。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;AI Agent 模拟了人类处理问题的策略性思维结构，通过角色设定、规划、内存和动作模块实现了在大型语言模型环境中的群体智能模拟与构建。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;AI Agent 的闭环系统特点在于规划的每个步骤都受到之前步骤的影响，这意味着 Agent 会多次调用大型语言模型，并对内存的管理更为复杂。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;RAG 模型的排序结果与后续调用的大型语言模型紧密相关，不同的大型语言模型对排序敏感度有显著差异，因此需要考虑排序阶段的多维度因素进行优化。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;在评估 Agent 时，存在三种核心评估策略，包括冷启动阶段的评估、根据应用场景的具体需求进行评估以及评估 Agent 的泛化能力。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;多模态模型在文档智能领域的应用，尤其是针对文字密集型文档，探索了多模态融合技术，以解决 OCR 步骤繁琐的问题。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;在多模态研究中，引入了一种名为“语义缓存”的策略，该技术显著降低了调用延迟，实现了一个数量级以上的优化。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;在采用语义缓存时，必须重视缓存一致性问题，特别是在企业环境下，确保并行化处理的安全性至关重要。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Marvin 库在整合人类定义函数与大型语言模型（LLM）函数的应用中展现了独特价值，通过提供简洁清晰的接口设计，有效降低了 LLM 函数编程的复杂度。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;</content><category term="技术"></category><category term="编程"></category><category term="AI"></category><category term="Agent"></category></entry><entry><title>Redis面试知识点</title><link href="https://xtt.github.com/2025/02/redismian-shi-zhi-shi-dian.html" rel="alternate"></link><published>2025-02-06T12:00:00+08:00</published><updated>2025-02-06T12:00:00+08:00</updated><author><name>赵腾</name></author><id>tag:xtt.github.com,2025-02-06:/2025/02/redismian-shi-zhi-shi-dian.html</id><summary type="html">&lt;h1&gt;简介&lt;/h1&gt;
+&lt;blockquote&gt;
+&lt;p&gt;关于Redis的面试题，我需要准备一些常见的题目和答案。首先，得确定用户的需求是什么，可能是在准备面试，所以需要覆盖基础到 …&lt;/p&gt;&lt;/blockquote&gt;</summary><content type="html">&lt;h1&gt;简介&lt;/h1&gt;
+&lt;blockquote&gt;
+&lt;p&gt;关于Redis的面试题，我需要准备一些常见的题目和答案。首先，得确定用户的需求是什么，可能是在准备面试，所以需要覆盖基础到进阶的内容。Redis作为缓存和数据库，有很多方面可以讲，比如数据结构、持久化、集群、应用场景等。&lt;/p&gt;
+&lt;p&gt;首先，我应该分几个大类来整理问题，比如基础概念、数据结构、持久化机制、高可用性、性能优化、应用场景等。每个类别下选几个典型的问题，这样结构清晰，用户也容易查阅。&lt;/p&gt;
+&lt;p&gt;比如基础概念部分，可能需要解释什么是Redis，特点是什么。数据结构方面，Redis支持哪些，各自的使用场景，比如String、Hash、List、Set、Sorted Set，还有高级结构如HyperLogLog、Geo等。持久化方面，RDB和AOF的区别和优缺点，以及如何选择。高可用性的话，主从复制、哨兵、集群的区别。性能优化可能涉及到内存优化、命令使用注意事项。应用场景的话，比如缓存、计数器、消息队列等。&lt;/p&gt;
+&lt;p&gt;还要注意一些常见的问题，比如缓存穿透、雪崩、击穿，以及解决方案。事务和管道机制的区别，Redis的线程模型，单线程为什么快。可能还要包括一些实际使用中的问题，比如如何保证数据一致性，淘汰策略，分布式锁的实现等。&lt;/p&gt;
+&lt;p&gt;另外，用户可能需要答案简洁明了，适合面试时快速回答。所以每个问题的答案要简明扼要，重点突出，同时涵盖关键点。比如在解释Redis时，可以提到它是内存数据库，支持持久化，丰富的数据结构，单线程模型等。&lt;/p&gt;
+&lt;p&gt;还要考虑可能的进阶问题，比如Redis Cluster的工作原理，数据分片，迁移过程，故障转移等。或者Redis的线程模型在6.0之后的变化，多线程处理IO等。这些可能出现在高级职位面试中。&lt;/p&gt;
+&lt;p&gt;需要注意的一些陷阱问题，比如Redis是否支持事务，ACID特性如何，这里要说明Redis事务和传统数据库事务的不同，没有回滚机制等。还有内存淘汰策略，比如LRU、LFU的区别和应用场景。&lt;/p&gt;
+&lt;p&gt;最后，总结的时候可以提醒用户不仅要记住答案，还要理解背后的原理，结合项目经验举例说明，这样在面试中更有说服力。可能还需要检查是否有遗漏的重要知识点，比如发布订阅功能，慢查询日志，Pipeline批量操作，Lua脚本的使用等。&lt;/p&gt;
+&lt;p&gt;总之，整理Redis面试题需要覆盖广泛，结构清晰，答案准确简洁，同时兼顾基础和高级内容，帮助用户全面准备面试&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1&gt;核心内容&lt;/h1&gt;
+&lt;p&gt;以下是常见的Redis面试题及其解答，帮助你系统准备Redis相关面试：&lt;/p&gt;
+&lt;h2&gt;基本概念和主要特点&lt;/h2&gt;
+&lt;h3&gt;Redis 是什么？&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Redis（Remote Dictionary Server）是一个基于内存的高性能键值数据库，支持多种数据结构（String、Hash、List、Set、Sorted Set等）。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Redis 的主要特点&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;内存存储，读写速度快（10万+/秒）。&lt;/li&gt;
+&lt;li&gt;支持持久化（RDB、AOF）。&lt;/li&gt;
+&lt;li&gt;支持主从复制、哨兵、集群等高可用方案。&lt;/li&gt;
+&lt;li&gt;单线程模型避免竞态条件（6.0后支持多线程I/O）。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Redis与Memcached的区别？&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;数据结构&lt;/strong&gt;：Redis支持更丰富的数据结构；Memcached仅支持String。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;持久化&lt;/strong&gt;：Redis支持；Memcached不支持。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;线程模型&lt;/strong&gt;：Redis单线程（6.0后多线程I/O）；Memcached多线程。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;适用场景&lt;/strong&gt;：Redis适合复杂缓存需求；Memcached适合简单KV缓存。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;数据结构与使用场景&lt;/h2&gt;
+&lt;h3&gt;Redis支持哪些数据结构？举例应用场景&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;String&lt;/strong&gt;：计数器（&lt;strong&gt;INCR&lt;/strong&gt;）、缓存。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Hash&lt;/strong&gt;：存储对象（如用户信息）。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;List&lt;/strong&gt;：消息队列、最新文章列表。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Set&lt;/strong&gt;：共同好友（交集）、唯一性检查。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Sorted Set&lt;/strong&gt;：排行榜、延迟队列（按分数排序）。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Bitmaps&lt;/strong&gt;：用户签到、活跃统计。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;HyperLogLog&lt;/strong&gt;：基数统计（如UV）。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;GEO&lt;/strong&gt;：地理位置计算。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Sorted Set底层实现是什么？&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;使用跳跃表（SkipList）和哈希表，保证元素有序且查询高效（O(log N)）。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;持久化&lt;/h2&gt;
+&lt;h3&gt;RDB和AOF的区别？&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;RDB&lt;/strong&gt;（快照）：&lt;ol&gt;
+&lt;li&gt;定时生成数据快照，文件紧凑，恢复快。&lt;/li&gt;
+&lt;li&gt;缺点：可能丢失最后一次快照后的数据。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;AOF&lt;/strong&gt;（追加日志）：&lt;ol&gt;
+&lt;li&gt;记录所有写命令，数据安全性高（可配置同步频率）。&lt;/li&gt;
+&lt;li&gt;缺点：文件较大，恢复慢。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;混合模式&lt;/strong&gt;（Redis 4.0+）：结合两者，AOF记录增量，RDB作为全量备份。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;如何选择RDB和AOF？&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;要求高可用性选AOF（如&lt;strong&gt;appendfsync everysec&lt;/strong&gt;）。&lt;/li&gt;
+&lt;li&gt;需要快速恢复且允许少量数据丢失选RDB。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;高可用与集群&lt;/h2&gt;
+&lt;h3&gt;主从复制原理？&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;主节点（Master）异步复制数据到从节点（Slave）。&lt;/li&gt;
+&lt;li&gt;流程：&lt;ol&gt;
+&lt;li&gt;Slave发送SYNC命令。&lt;/li&gt;
+&lt;li&gt;Master生成RDB快照并发送给Slave。&lt;/li&gt;
+&lt;li&gt;Master持续发送缓冲区的写命令给Slave。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;哨兵（Sentinel）的作用？&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;监控主从节点健康状态。&lt;/li&gt;
+&lt;li&gt;自动故障转移：当Master宕机时，选举新Master。&lt;/li&gt;
+&lt;li&gt;提供配置中心，客户端通过哨兵获取Master地址。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Redis Cluster如何分片？&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;采用 &lt;strong&gt;哈希槽（Hash Slot）&lt;/strong&gt; 将Key映射到节点，共16384个槽。&lt;/li&gt;
+&lt;li&gt;每个节点负责一部分槽，数据按CRC16(key) % 16384分配到槽。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;缓存问题与解决方案&lt;/h2&gt;
+&lt;h3&gt;缓存穿透&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;问题&lt;/strong&gt;：大量请求查询不存在的数据（绕过缓存直接查DB）。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;解决&lt;/strong&gt;：&lt;ol&gt;
+&lt;li&gt;布隆过滤器（Bloom Filter）拦截非法Key。&lt;/li&gt;
+&lt;li&gt;缓存空值（设置短过期时间）。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;缓存雪崩&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;问题&lt;/strong&gt;：大量缓存同时过期，请求直接冲击DB。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;解决&lt;/strong&gt;：&lt;ol&gt;
+&lt;li&gt;随机化缓存过期时间。&lt;/li&gt;
+&lt;li&gt;集群部署或限流降级。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;缓存击穿&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;问题&lt;/strong&gt;：热点Key过期后，高并发请求瞬间压垮DB。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;解决&lt;/strong&gt;：&lt;ol&gt;
+&lt;li&gt;互斥锁（如Redis的&lt;strong&gt;SETNX&lt;/strong&gt;）只允许一个线程重建缓存。&lt;/li&gt;
+&lt;li&gt;永不过期（逻辑过期时间+异步更新）。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;高级特性&lt;/h2&gt;
+&lt;h3&gt;Redis事务（MULTI/EXEC）&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;事务命令按顺序执行，但不保证原子性（单条命令原子，事务整体可能部分失败）。&lt;/li&gt;
+&lt;li&gt;无回滚机制，需开发者处理逻辑。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Pipeline的作用？&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;批量发送多个命令，减少网络往返时间（RTT），提升吞吐量。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;如何实现分布式锁？&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;使用&lt;strong&gt;SET key value NX PX timeout&lt;/strong&gt;（设置过期时间防死锁）。&lt;/li&gt;
+&lt;li&gt;推荐RedLock算法（多节点部署，避免单点故障）。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;性能优化&lt;/h2&gt;
+&lt;h3&gt;为什么Redis单线程还快？&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;纯内存操作。&lt;/li&gt;
+&lt;li&gt;避免线程切换和竞态开销。&lt;/li&gt;
+&lt;li&gt;I/O多路复用（epoll）处理高并发连接。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Big Key问题如何解决？&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;拆分大Key（如Hash分多个字段）。&lt;/li&gt;
+&lt;li&gt;删除时使用&lt;strong&gt;UNLINK&lt;/strong&gt;（异步删除）。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;常见命令&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;查看所有Key：&lt;strong&gt;SCAN&lt;/strong&gt;（避免阻塞，代替 KEYS *）。&lt;/li&gt;
+&lt;li&gt;设置过期时间：&lt;strong&gt;EXPIRE key seconds&lt;/strong&gt;。&lt;/li&gt;
+&lt;li&gt;查看内存信息：&lt;strong&gt;INFO MEMORY&lt;/strong&gt;。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1&gt;总结&lt;/h1&gt;
+&lt;p&gt;准备Redis面试需深入理解数据结构、持久化、高可用方案及典型问题（穿透/雪崩/击穿）。
+结合实际项目经验，说明如何应用Redis解决具体问题（如分布式锁、排行榜等），会更具说服力。&lt;/p&gt;</content><category term="技术"></category><category term="编程"></category><category term="Cache"></category></entry><entry><title>Spring Cloud Gateway 深度解析：路由、过滤与安全</title><link href="https://xtt.github.com/2024/11/spring-cloud-gateway-shen-du-jie-xi-lu-you-guo-lu-yu-an-quan.html" rel="alternate"></link><published>2024-11-21T12:00:00+08:00</published><updated>2024-11-21T12:00:00+08:00</updated><author><name>赵腾</name></author><id>tag:xtt.github.com,2024-11-21:/2024/11/spring-cloud-gateway-shen-du-jie-xi-lu-you-guo-lu-yu-an-quan.html</id><summary type="html">&lt;h1&gt;简介&lt;/h1&gt;
+&lt;p&gt;Spring Cloud Gateway 是微服务架构中的关键组件，用于管理微服务之间的流量。
+本文将深入解析 Spring Cloud Gateway 的核心功能，包括路由配置 …&lt;/p&gt;</summary><content type="html">&lt;h1&gt;简介&lt;/h1&gt;
+&lt;p&gt;Spring Cloud Gateway 是微服务架构中的关键组件，用于管理微服务之间的流量。
+本文将深入解析 Spring Cloud Gateway 的核心功能，包括路由配置、过滤器使用和安全防护。
+我们将通过具体的示例和最佳实践，展示如何高效地配置路由规则、使用各种过滤器优化请求处理，并实施安全措施保护微服务入口。
+无论你是初学者还是有经验的开发者，本文都将为你提供宝贵的参考和指导，帮助你在微服务开发中更有效地利用 Spring Cloud Gateway。&lt;/p&gt;
+&lt;h1&gt;核心内容&lt;/h1&gt;
+&lt;h2&gt;基本概念和主要特点&lt;/h2&gt;
+&lt;h3&gt;Spring Cloud Gateway 是什么？&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Spring Cloud Gateway 是 Spring Cloud 生态系统中的新一代 API 网关。&lt;/li&gt;
+&lt;li&gt;它基于 Reactor 模型，提供了高性能的路由和过滤功能，用于管理微服务之间的流量。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Spring Cloud Gateway 的主要特点&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;路由功能&lt;/strong&gt;：灵活的路由配置，支持多种匹配条件。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;过滤器&lt;/strong&gt;：丰富的过滤器类型，用于请求和响应的预处理和后处理。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;安全性&lt;/strong&gt;：集成 OAuth2、JWT 等安全机制，保护微服务入口。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;高可用&lt;/strong&gt;：支持负载均衡和故障转移，提高系统的可用性。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;快速入门&lt;/h2&gt;
+&lt;h3&gt;环境准备&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;确保已安装 JDK 和 Maven。&lt;/li&gt;
+&lt;li&gt;创建一个新的 Spring Boot 项目。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;添加依赖&lt;/h3&gt;
+&lt;p&gt;在 &lt;code&gt;pom.xml&lt;/code&gt; 文件中添加 Spring Cloud Gateway 的依赖：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="nt"&gt;&amp;lt;dependency&amp;gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;org.springframework.cloud&lt;span class="nt"&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;spring-cloud-starter-gateway&lt;span class="nt"&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+&lt;span class="nt"&gt;&amp;lt;/dependency&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;配置路由&lt;/h3&gt;
+&lt;p&gt;在 &lt;code&gt;application.yml&lt;/code&gt; 中配置路由规则：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;spring&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;cloud&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;gateway&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="n"&gt;routes&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;id&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;service&lt;/span&gt;
+&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="n"&gt;uri&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;lb&lt;/span&gt;&lt;span class="o"&gt;://&lt;/span&gt;&lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;service&lt;/span&gt;
+&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="n"&gt;predicates&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Path&lt;/span&gt;&lt;span class="o"&gt;=/&lt;/span&gt;&lt;span class="n"&gt;users&lt;/span&gt;&lt;span class="o"&gt;/**&lt;/span&gt;
+&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="n"&gt;filters&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;StripPrefix&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;启动应用&lt;/h3&gt;
+&lt;p&gt;创建一个简单的 Spring Boot 应用并启动：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="nv"&gt;@SpringBootApplication&lt;/span&gt;
+&lt;span class="k"&gt;public&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;class&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;GatewayApplication&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="k"&gt;public&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;static&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;void&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;main&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;String&lt;/span&gt;&lt;span class="err"&gt;[]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="n"&gt;SpringApplication&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;GatewayApplication&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="k"&gt;class&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="err"&gt;}&lt;/span&gt;
+&lt;span class="err"&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2&gt;路由配置详解&lt;/h2&gt;
+&lt;h3&gt;路由基础&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;路由 ID&lt;/strong&gt;：唯一标识一个路由。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;URI&lt;/strong&gt;：目标服务的地址，支持 http、lb（负载均衡）等协议。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Predicates&lt;/strong&gt;：路由匹配条件，支持多种类型（如 Path、Query、Header 等）。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Filters&lt;/strong&gt;：路由过滤器，用于请求和响应的预处理和后处理。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;复杂路由示例&lt;/h3&gt;
+&lt;p&gt;配置多个路由规则，使用不同的匹配条件：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;spring&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;cloud&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;gateway&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="n"&gt;routes&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;id&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;service&lt;/span&gt;
+&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="n"&gt;uri&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;lb&lt;/span&gt;&lt;span class="o"&gt;://&lt;/span&gt;&lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;service&lt;/span&gt;
+&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="n"&gt;predicates&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Path&lt;/span&gt;&lt;span class="o"&gt;=/&lt;/span&gt;&lt;span class="n"&gt;users&lt;/span&gt;&lt;span class="o"&gt;/**&lt;/span&gt;
+&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="n"&gt;filters&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;StripPrefix&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;id&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;order&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;service&lt;/span&gt;
+&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="n"&gt;uri&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;lb&lt;/span&gt;&lt;span class="o"&gt;://&lt;/span&gt;&lt;span class="n"&gt;order&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;service&lt;/span&gt;
+&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="n"&gt;predicates&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Path&lt;/span&gt;&lt;span class="o"&gt;=/&lt;/span&gt;&lt;span class="n"&gt;orders&lt;/span&gt;&lt;span class="o"&gt;/**&lt;/span&gt;
+&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="n"&gt;filters&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;AddRequestHeader&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;X&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;User&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;Id&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;123&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2&gt;过滤器详解&lt;/h2&gt;
+&lt;h3&gt;内置过滤器&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;AddRequestHeader：添加请求头。&lt;/li&gt;
+&lt;li&gt;RemoveRequestHeader：移除请求头。&lt;/li&gt;
+&lt;li&gt;AddResponseHeader：添加响应头。&lt;/li&gt;
+&lt;li&gt;StripPrefix：移除路径前缀。&lt;/li&gt;
+&lt;li&gt;RewritePath：重写路径。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;自定义过滤器&lt;/h3&gt;
+&lt;p&gt;创建一个自定义的全局过滤器：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="err"&gt;@&lt;/span&gt;&lt;span class="nx"&gt;Component&lt;/span&gt;
+&lt;span class="nx"&gt;public&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kd"&gt;class&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;CustomGlobalFilter&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;implements&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;GlobalFilter&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;Ordered&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="err"&gt;@&lt;/span&gt;&lt;span class="nx"&gt;Override&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nx"&gt;public&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;Mono&lt;/span&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nx"&gt;Void&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;filter&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;ServerWebExchange&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;exchange&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;GatewayFilterChain&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;chain&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="nx"&gt;ServerHttpRequest&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;request&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;exchange&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;getRequest&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="nx"&gt;System&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;out&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;println&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Request path: &amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;request&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;getURI&lt;/span&gt;&lt;span class="p"&gt;().&lt;/span&gt;&lt;span class="nx"&gt;getPath&lt;/span&gt;&lt;span class="p"&gt;());&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;chain&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;filter&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;exchange&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="err"&gt;@&lt;/span&gt;&lt;span class="nx"&gt;Override&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nx"&gt;public&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;int&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;getOrder&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2&gt;安全防护&lt;/h2&gt;
+&lt;h3&gt;集成 OAuth2&lt;/h3&gt;
+&lt;p&gt;配置 OAuth2 安全认证：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;spring&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;security&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;oauth2&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="n"&gt;resourceserver&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="n"&gt;jwt&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="n"&gt;issuer&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;uri&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;http&lt;/span&gt;&lt;span class="o"&gt;://&lt;/span&gt;&lt;span class="n"&gt;localhost&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;8080&lt;/span&gt;&lt;span class="sr"&gt;/auth/realms/&lt;/span&gt;&lt;span class="n"&gt;my&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;realm&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;使用 JWT&lt;/h3&gt;
+&lt;p&gt;配置 JWT 认证：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;spring&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;security&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;oauth2&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="n"&gt;resourceserver&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="n"&gt;jwt&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="w"&gt;          &lt;/span&gt;&lt;span class="n"&gt;jwk&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="kd"&gt;set&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;uri&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;http&lt;/span&gt;&lt;span class="o"&gt;://&lt;/span&gt;&lt;span class="n"&gt;localhost&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;8080&lt;/span&gt;&lt;span class="sr"&gt;/auth/realms/my-realm/protocol/openid-connect/&lt;/span&gt;&lt;span class="n"&gt;certs&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;安全过滤器&lt;/h3&gt;
+&lt;p&gt;创建一个安全过滤器，验证 JWT 令牌：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="err"&gt;@&lt;/span&gt;&lt;span class="nx"&gt;Component&lt;/span&gt;
+&lt;span class="nx"&gt;public&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kd"&gt;class&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;JwtAuthenticationFilter&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;implements&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;GlobalFilter&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;Ordered&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="err"&gt;@&lt;/span&gt;&lt;span class="nx"&gt;Override&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nx"&gt;public&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;Mono&lt;/span&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nx"&gt;Void&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;filter&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;ServerWebExchange&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;exchange&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;GatewayFilterChain&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;chain&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="nx"&gt;ServerHttpRequest&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;request&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;exchange&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;getRequest&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="nx"&gt;String&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;token&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;request&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;getHeaders&lt;/span&gt;&lt;span class="p"&gt;().&lt;/span&gt;&lt;span class="nx"&gt;getFirst&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Authorization&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;token&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;!=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;null&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;token&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;startsWith&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Bearer &amp;quot;&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="nx"&gt;try&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;                &lt;/span&gt;&lt;span class="c1"&gt;// 验证 JWT 令牌&lt;/span&gt;
+&lt;span class="w"&gt;                &lt;/span&gt;&lt;span class="c1"&gt;// ...&lt;/span&gt;
+&lt;span class="w"&gt;                &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;chain&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;filter&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;exchange&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;catch&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;Exception&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;e&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;                &lt;/span&gt;&lt;span class="c1"&gt;// 处理验证失败的情况&lt;/span&gt;
+&lt;span class="w"&gt;                &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;Mono&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;error&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;new&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;RuntimeException&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Invalid token&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;));&lt;/span&gt;
+&lt;span class="w"&gt;            &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;Mono&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;error&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;new&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;RuntimeException&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Missing token&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;));&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="err"&gt;@&lt;/span&gt;&lt;span class="nx"&gt;Override&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nx"&gt;public&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;int&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;getOrder&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2&gt;最佳实践&lt;/h2&gt;
+&lt;h3&gt;代码组织&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;将路由配置和过滤器逻辑分开，便于管理和维护。&lt;/li&gt;
+&lt;li&gt;使用配置文件管理复杂的路由规则。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;错误处理&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;使用统一的异常处理机制，捕获并处理路由和过滤器中的异常。&lt;/li&gt;
+&lt;li&gt;提供友好的错误提示信息。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;性能优化&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;合理设置超时时间，避免长时间等待。&lt;/li&gt;
+&lt;li&gt;使用缓存机制，减少不必要的网络请求。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;安全性&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;使用 HTTPS 协议，保证数据传输的安全性。&lt;/li&gt;
+&lt;li&gt;配置身份验证和授权，保护服务接口。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1&gt;总结&lt;/h1&gt;
+&lt;p&gt;通过本文，我们详细介绍了 Spring Cloud Gateway 的基本用法、高级特性和最佳实践，
+帮助读者在微服务开发中更高效地使用 Spring Cloud Gateway。&lt;/p&gt;</content><category term="技术"></category><category term="编程"></category><category term="Java"></category><category term="SpringCloud"></category><category term="微服务"></category></entry><entry><title>Feign 客户端：简化微服务间通信的艺术</title><link href="https://xtt.github.com/2024/11/feign-ke-hu-duan-jian-hua-wei-fu-wu-jian-tong-xin-de-yi-zhu.html" rel="alternate"></link><published>2024-11-20T18:00:00+08:00</published><updated>2024-11-20T18:00:00+08:00</updated><author><name>赵腾</name></author><id>tag:xtt.github.com,2024-11-20:/2024/11/feign-ke-hu-duan-jian-hua-wei-fu-wu-jian-tong-xin-de-yi-zhu.html</id><summary type="html">&lt;h1&gt;简介&lt;/h1&gt;
+&lt;p&gt;随着微服务架构的普及，服务间的高效通信变得尤为重要。
+Feign 作为 Spring Cloud 生态系统中的声明式 HTTP 客户端，极大地简化了 …&lt;/p&gt;</summary><content type="html">&lt;h1&gt;简介&lt;/h1&gt;
+&lt;p&gt;随着微服务架构的普及，服务间的高效通信变得尤为重要。
+Feign 作为 Spring Cloud 生态系统中的声明式 HTTP 客户端，极大地简化了微服务之间的调用。
+本文将详细介绍 Feign 的基本概念、核心功能以及高级特性，包括如何在 Spring Boot 项目中集成 Feign、
+配置超时和日志记录、实现熔断和重试策略、结合 Ribbon 实现负载均衡等。
+通过具体的示例和最佳实践，帮助读者在实际项目中更高效地使用 Feign，提升微服务架构的稳定性和性能。&lt;/p&gt;
+&lt;h1&gt;核心内容&lt;/h1&gt;
+&lt;h2&gt;基本概念和主要特点&lt;/h2&gt;
+&lt;h3&gt;Feign 是什么？&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Feign 是一个声明式的 HTTP 客户端，用于简化 HTTP API 的调用。&lt;/li&gt;
+&lt;li&gt;它通过注解的方式定义服务接口，自动生成 HTTP 请求，减少了样板代码。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Feign 的主要特点&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;声明式接口&lt;/strong&gt;：通过简单的注解定义服务接口。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;自动转换&lt;/strong&gt;：支持自动将请求参数和响应数据转换为 Java 对象。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;集成 Hystrix&lt;/strong&gt;：内置熔断机制，提高系统的容错性和稳定性。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;负载均衡&lt;/strong&gt;：结合 Ribbon 实现客户端负载均衡，提高服务的可用性。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;快速入门&lt;/h2&gt;
+&lt;h3&gt;环境准备&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;确保已安装 JDK 和 Maven。&lt;/li&gt;
+&lt;li&gt;创建一个新的 Spring Boot 项目。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;添加依赖&lt;/h3&gt;
+&lt;p&gt;在 &lt;code&gt;pom.xml&lt;/code&gt; 文件中添加 Feign 的依赖：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="nt"&gt;&amp;lt;dependency&amp;gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;org.springframework.cloud&lt;span class="nt"&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;spring-cloud-starter-openfeign&lt;span class="nt"&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+&lt;span class="nt"&gt;&amp;lt;/dependency&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;启用 Feign 客户端&lt;/h3&gt;
+&lt;p&gt;在主类或配置类上添加 &lt;code&gt;@EnableFeignClients&lt;/code&gt; 注解：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="nv"&gt;@SpringBootApplication&lt;/span&gt;
+&lt;span class="nv"&gt;@EnableFeignClients&lt;/span&gt;
+&lt;span class="k"&gt;public&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;class&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Application&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="k"&gt;public&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;static&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;void&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;main&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;String&lt;/span&gt;&lt;span class="err"&gt;[]&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="n"&gt;SpringApplication&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Application&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="k"&gt;class&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="err"&gt;}&lt;/span&gt;
+&lt;span class="err"&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;定义 Feign 客户端&lt;/h3&gt;
+&lt;p&gt;创建一个接口来定义服务调用：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="nv"&gt;@RestController&lt;/span&gt;
+&lt;span class="k"&gt;public&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;class&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;UserController&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nv"&gt;@Autowired&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;private&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;UserClient&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;userClient&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nv"&gt;@GetMapping&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="ss"&gt;&amp;quot;/user/{id}&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="k"&gt;public&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;User&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;getUser&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;@PathVariable&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="ss"&gt;&amp;quot;id&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Long&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;id&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;userClient&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;getUserById&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;id&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="err"&gt;}&lt;/span&gt;
+&lt;span class="err"&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2&gt;高级特性&lt;/h2&gt;
+&lt;h3&gt;超时设置&lt;/h3&gt;
+&lt;p&gt;在 &lt;code&gt;application.yml&lt;/code&gt; 中配置超时时间：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;日志记录&lt;/h3&gt;
+&lt;p&gt;在 &lt;code&gt;application.yml&lt;/code&gt; 中配置日志级别：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;logging&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;level&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;com&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="na"&gt;example&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="na"&gt;client&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="na"&gt;UserClient&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;DEBUG&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;熔断机制（Hystrix）&lt;/h3&gt;
+&lt;p&gt;启用 Hystrix 并配置回退方法：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="err"&gt;@&lt;/span&gt;&lt;span class="nx"&gt;FeignClient&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;name&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;&amp;quot;user-service&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;fallback&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;UserClientFallback&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="kd"&gt;class&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nx"&gt;public&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kd"&gt;interface&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;UserClient&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="err"&gt;@&lt;/span&gt;&lt;span class="nx"&gt;GetMapping&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;/users/{id}&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nx"&gt;User&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;getUserById&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="err"&gt;@&lt;/span&gt;&lt;span class="nx"&gt;PathVariable&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;id&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;Long&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;id&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+
+&lt;span class="err"&gt;@&lt;/span&gt;&lt;span class="nx"&gt;Component&lt;/span&gt;
+&lt;span class="nx"&gt;public&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kd"&gt;class&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;UserClientFallback&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;implements&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;UserClient&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="err"&gt;@&lt;/span&gt;&lt;span class="nx"&gt;Override&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nx"&gt;public&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;User&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;getUserById&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;Long&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;id&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;new&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;User&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="nx"&gt;L&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Unknown&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;重试策略&lt;/h3&gt;
+&lt;p&gt;在 &lt;code&gt;application.yml&lt;/code&gt; 中配置重试次数：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;feign&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="k"&gt;default&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="n"&gt;retryer&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;com&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="na"&gt;example&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="na"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="na"&gt;MyRetryer&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;创建自定义的重试器：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;public&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;class&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;MyRetryer&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;extends&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Retryer&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Default&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;public&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;MyRetryer&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="n"&gt;super&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1000&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1000&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;负载均衡（Ribbon）&lt;/h3&gt;
+&lt;p&gt;确保已添加 Ribbon 的依赖：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="nt"&gt;&amp;lt;dependency&amp;gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;org.springframework.cloud&lt;span class="nt"&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;spring-cloud-starter-netflix-ribbon&lt;span class="nt"&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+&lt;span class="nt"&gt;&amp;lt;/dependency&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;在 &lt;code&gt;application.yml&lt;/code&gt; 中配置 Ribbon：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="n"&gt;ribbon&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;ReadTimeout&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;5000&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;ConnectTimeout&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;5000&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;MaxAutoRetries&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;MaxAutoRetriesNextServer&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="n"&gt;OkToRetryOnAllOperations&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kc"&gt;true&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2&gt;最佳实践&lt;/h2&gt;
+&lt;h3&gt;代码组织&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;将 Feign 客户端放在单独的包中，便于管理和维护。&lt;/li&gt;
+&lt;li&gt;使用接口隔离原则，避免单一接口过于臃肿。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;错误处理&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;使用统一的异常处理机制，捕获并处理 Feign 调用中的异常。&lt;/li&gt;
+&lt;li&gt;提供友好的错误提示信息。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;性能优化&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;合理设置超时时间，避免长时间等待。&lt;/li&gt;
+&lt;li&gt;使用缓存机制，减少不必要的网络请求。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;安全性&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;使用 HTTPS 协议，保证数据传输的安全性。&lt;/li&gt;
+&lt;li&gt;配置身份验证和授权，保护服务接口。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1&gt;总结&lt;/h1&gt;
+&lt;p&gt;通过本文，我们详细介绍了 Feign 的基本概念、核心功能和高级特性，并提供了具体的示例和最佳实践。
+希望本文能帮助读者在微服务开发中更高效地使用 Feign，提升系统的稳定性和性能。&lt;/p&gt;</content><category term="技术"></category><category term="编程"></category><category term="Java"></category><category term="SpringCloud"></category><category term="微服务"></category></entry></feed>
