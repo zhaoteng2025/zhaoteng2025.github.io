@@ -19,7 +19,7 @@ DATE_FORMATS = {
 }
 
 # 主题设置
-THEME = 'themes/flex'
+THEME = 'themes/notmyidea'
 
 # 插件设置
 PLUGIN_PATHS = ['plugins']
