@@ -1,133 +1,50 @@
-
 <!DOCTYPE html>
 <html lang="zh">
-<head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="HandheldFriendly" content="True" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="robots" content="" />
+        <head>
+                        <meta charset="utf-8" />
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                        <meta name="generator" content="Pelican" />
+                        <title>Feign 客户端：简化微服务间通信的艺术</title>
+                        <link rel="stylesheet" href="https://zhaoteng2025.github.com/theme/css/main.css" />
+                                <link href="https://zhaoteng2025.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="小腾腾的小站 Atom Feed" />
+    <meta name="description" content="简介 随着微服务架构的普及，服务间的高效通信变得尤为重要。 Feign 作为 Spring Cloud 生态系统中的声明式 HTTP 客户端，极大地简化了 …" />
+        </head>
 
-  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,700;1,400&family=Source+Sans+Pro:ital,wght@0,300;0,400;0,700;1,400&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" type="text/css" href="https://zhaoteng.github.com/theme/stylesheet/style.min.css">
-
-
-    <link id="pygments-light-theme" rel="stylesheet" type="text/css"
-          href="https://zhaoteng.github.com/theme/pygments/github.min.css">
-
-
-
-  <link rel="stylesheet" type="text/css" href="https://zhaoteng.github.com/theme/font-awesome/css/fontawesome.css">
-  <link rel="stylesheet" type="text/css" href="https://zhaoteng.github.com/theme/font-awesome/css/brands.css">
-  <link rel="stylesheet" type="text/css" href="https://zhaoteng.github.com/theme/font-awesome/css/solid.css">
-
-
-
-
-  <link href="https://zhaoteng.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="小腾腾的小站 Atom">
-
-
-
-
-
-
-
-
- 
-
-<meta name="author" content="赵腾" />
-<meta name="description" content="简介 随着微服务架构的普及，服务间的高效通信变得尤为重要。 Feign 作为 Spring Cloud 生态系统中的声明式 HTTP 客户端，极大地简化了 …" />
-<meta name="keywords" content="编程, Java, SpringCloud, 微服务">
-
-
-  <meta property="og:site_name" content="小腾腾的小站"/>
-  <meta property="og:title" content="Feign 客户端：简化微服务间通信的艺术"/>
-  <meta property="og:description" content="简介 随着微服务架构的普及，服务间的高效通信变得尤为重要。 Feign 作为 Spring Cloud 生态系统中的声明式 HTTP 客户端，极大地简化了 …"/>
-  <meta property="og:locale" content="en_US"/>
-  <meta property="og:url" content="https://zhaoteng.github.com/2024/11/feign-ke-hu-duan-jian-hua-wei-fu-wu-jian-tong-xin-de-yi-zhu.html"/>
-  <meta property="og:type" content="article"/>
-  <meta property="article:published_time" content="2024-11-20 18:00:00+08:00"/>
-  <meta property="article:modified_time" content=""/>
-  <meta property="article:author" content="https://zhaoteng.github.com/author/zhao-teng.html">
-  <meta property="article:section" content="技术"/>
-  <meta property="article:tag" content="编程"/>
-  <meta property="article:tag" content="Java"/>
-  <meta property="article:tag" content="SpringCloud"/>
-  <meta property="article:tag" content="微服务"/>
-  <meta property="og:image" content="/images/profile.png">
-
-  <title>小腾腾的小站 &ndash; Feign 客户端：简化微服务间通信的艺术</title>
-
-
-</head>
-<body class="light-theme">
-
-<aside>
-  <div>
-    <a href="https://zhaoteng.github.com/">
-      <img src="/images/profile.png" alt="我的技术博客" title="我的技术博客">
+        <body id="index" class="home">
+    <a href="https://github.com/zhaoteng2025/zhaoteng2025.github.io">
+            <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://github.blog/wp-content/uploads/2008/12/forkme_right_red_aa0000.png" alt="Fork me on GitHub" />
     </a>
+                <header id="banner" class="body">
+                        <h1><a href="https://zhaoteng2025.github.com/">小腾腾的小站 <strong>记录技术，分享经验</strong></a></h1>
+                        <nav><ul>
+                                        <li><a href="/archives.html">归档</a></li>
+                                        <li><a href="/categories.html">分类</a></li>
+                                        <li><a href="/tags.html">标签</a></li>
+                                                <li><a href="https://zhaoteng2025.github.com/about.html">关于我</a></li>
+                                                <li class="active"><a href="https://zhaoteng2025.github.com/category/ji-zhu.html">技术</a></li>
+                                                <li><a href="https://zhaoteng2025.github.com/category/sheng-huo-ji-lu.html">生活记录</a></li>
+                        </ul></nav>
+                </header><!-- /#banner -->
+  <section id="content" class="body">
+    <article>
+      <header>
+        <h1 class="entry-title">
+          <a href="https://zhaoteng2025.github.com/2024/11/feign-ke-hu-duan-jian-hua-wei-fu-wu-jian-tong-xin-de-yi-zhu.html" rel="bookmark"
+             title="Permalink to Feign 客户端：简化微服务间通信的艺术">Feign 客户端：简化微服务间通信的艺术</a></h1>
+      </header>
 
-    <h1>
-      <a href="https://zhaoteng.github.com/">我的技术博客</a>
-    </h1>
+      <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2024-11-20T18:00:00+08:00">
+                Published: 2024-11-20 18:00
+        </abbr>
 
-    <p>记录技术，分享经验</p>
-
-
-    <nav>
-      <ul class="list">
-
-
-            <li>
-              <a target="_self"
-                 href="https://zhaoteng.github.com/about.html#about">
-                关于我
-              </a>
-            </li>
-
-      </ul>
-    </nav>
-
-    <ul class="social">
-      <li>
-        <a class="sc-GitHub"
-           href="https://github.com/zhaoteng2025"
-           target="_blank">
-          <i class="fa-brands fa-GitHub"></i>
-        </a>
-      </li>
-    </ul>
-  </div>
-
-</aside>
-  <main>
-
-<nav>
-  <a href="https://zhaoteng.github.com/">Home</a>
-
-  <a href="/archives.html">归档</a>
-  <a href="/categories.html">分类</a>
-  <a href="/tags.html">标签</a>
-
-  <a href="https://zhaoteng.github.com/feeds/all.atom.xml">Atom</a>
-
-</nav>
-
-<article class="single">
-  <header>
-      
-    <h1 id="feign-ke-hu-duan-jian-hua-wei-fu-wu-jian-tong-xin-de-yi-zhu">Feign 客户端：简化微服务间通信的艺术</h1>
-    <p>
-      Posted on 2024-11-20 18:00 in <a href="https://zhaoteng.github.com/category/ji-zhu.html">技术</a>
-
-    </p>
-  </header>
-
-
-  <div>
-    <h1>简介</h1>
+                <address class="vcard author">
+                        By                                 <a class="url fn" href="https://zhaoteng2025.github.com/author/zhao-teng.html">赵腾</a>
+                </address>
+        <p>In <a href="https://zhaoteng2025.github.com/category/ji-zhu.html">技术</a>.</p>
+<p>tags: <a href="https://zhaoteng2025.github.com/tag/bian-cheng.html">编程</a> <a href="https://zhaoteng2025.github.com/tag/java.html">Java</a> <a href="https://zhaoteng2025.github.com/tag/springcloud.html">SpringCloud</a> <a href="https://zhaoteng2025.github.com/tag/wei-fu-wu.html">微服务</a> </p>        
+</footer><!-- /.post-info -->        <h1>简介</h1>
 <p>随着微服务架构的普及，服务间的高效通信变得尤为重要。
 Feign 作为 Spring Cloud 生态系统中的声明式 HTTP 客户端，极大地简化了微服务之间的调用。
 本文将详细介绍 Feign 的基本概念、核心功能以及高级特性，包括如何在 Spring Boot 项目中集成 Feign、
@@ -278,68 +195,52 @@ Feign 作为 Spring Cloud 生态系统中的声明式 HTTP 客户端，极大地
 <h1>总结</h1>
 <p>通过本文，我们详细介绍了 Feign 的基本概念、核心功能和高级特性，并提供了具体的示例和最佳实践。
 希望本文能帮助读者在微服务开发中更高效地使用 Feign，提升系统的稳定性和性能。</p>
-  </div>
-  <div class="tag-cloud">
-    <p>
-      <a href="https://zhaoteng.github.com/tag/bian-cheng.html">编程</a>
-      <a href="https://zhaoteng.github.com/tag/java.html">Java</a>
-      <a href="https://zhaoteng.github.com/tag/springcloud.html">SpringCloud</a>
-      <a href="https://zhaoteng.github.com/tag/wei-fu-wu.html">微服务</a>
-    </p>
-  </div>
+      </div><!-- /.entry-content -->
+        <div class="comments">
+          <h2>Comments !</h2>
+          <div id="disqus_thread"></div>
+          <script type="text/javascript">
+            var disqus_shortname = 'your-disqus-sitename';
+            var disqus_identifier = '2024/11/feign-ke-hu-duan-jian-hua-wei-fu-wu-jian-tong-xin-de-yi-zhu.html';
+            var disqus_url = 'https://zhaoteng2025.github.com/2024/11/feign-ke-hu-duan-jian-hua-wei-fu-wu-jian-tong-xin-de-yi-zhu.html';
+            (function() {
+              var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+              dsq.src = '//your-disqus-sitename.disqus.com/embed.js';
+              (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+          </script>
+          <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
 
+    </article>
+  </section>
+                <section id="extras" class="body">
+                                <div class="social">
+                                        <h2>social</h2>
+                                        <ul>
+                                                        <li><a href="https://zhaoteng2025.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate">atom feed</a></li>
 
-  <div class="neighbors">
-    <a class="btn float-left" href="https://zhaoteng.github.com/2024/11/dai-ni-kuai-su-xie-chu-jian-ji-you-xiu-de-bo-ke.html" title="带你快速写出简洁优秀的博客">
-      <i class="fa fa-angle-left"></i> Previous Post
-    </a>
-    <a class="btn float-right" href="https://zhaoteng.github.com/2024/11/spring-cloud-gateway-shen-du-jie-xi-lu-you-guo-lu-yu-an-quan.html" title="Spring Cloud Gateway 深度解析：路由、过滤与安全">
-      Next Post <i class="fa fa-angle-right"></i>
-    </a>
-  </div>
+                                                        <li><a href="https://github.com/zhaoteng2025">GitHub</a></li>
+                                        </ul>
+                                </div><!-- /.social -->
+                </section><!-- /#extras -->
 
-  <div class="related-posts">
-    <h4>You might enjoy</h4>
-    <ul class="related-posts">
-      <li><a href="https://zhaoteng.github.com/2024/11/spring-cloud-gateway-shen-du-jie-xi-lu-you-guo-lu-yu-an-quan.html">Spring Cloud Gateway 深度解析：路由、过滤与安全</a></li>
-      <li><a href="https://zhaoteng.github.com/2025/03/guan-yu-rag-ai-agent-duo-mo-tai-de-li-jie-yu-tan-suo.html">关于 RAG、AI Agent、多模态的理解与探索</a></li>
-      <li><a href="https://zhaoteng.github.com/2025/02/redismian-shi-zhi-shi-dian.html">Redis面试知识点</a></li>
-    </ul>
-  </div>
+                <footer id="contentinfo" class="body">
+                        <address id="about" class="vcard body">
+                                Proudly powered by <a rel="nofollow" href="https://getpelican.com/">Pelican</a>, which takes great advantage of <a rel="nofollow" href="https://www.python.org/">Python</a>.
+                        </address><!-- /#about -->
 
+                        <p>The theme is by <a rel="nofollow" href="https://www.smashingmagazine.com/2009/08/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+                </footer><!-- /#contentinfo -->
 
-
-<!-- Disqus -->
-<div id="disqus_thread"></div>
-<script type="text/javascript">
-    var disqus_shortname = 'your-disqus-sitename';
-    (function() {
-        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    })();
-</script>
-<noscript>
-    Please enable JavaScript to view comments.
-</noscript>
-<!-- End Disqus -->
-</article>
-
-<footer>
-<p>&copy; 2025 赵腾</p>
-<p>
-Built with <a href="http://getpelican.com" target="_blank">Pelican</a> using <a href="http://bit.ly/flex-pelican" target="_blank">Flex</a> theme
-</p></footer>  </main>
-
-<script type="application/ld+json">
-{
-  "@context" : "http://schema.org",
-  "@type" : "Blog",
-  "name": " 小腾腾的小站 ",
-  "url" : "https://zhaoteng.github.com",
-  "image": "/images/profile.png",
-  "description": "这是一个关于编程和技术的博客"
-}
-</script>
-</body>
+    <script type="text/javascript">
+        var disqus_shortname = 'your-disqus-sitename';
+        (function () {
+            var s = document.createElement('script'); s.async = true;
+            s.type = 'text/javascript';
+            s.src = 'https://' + disqus_shortname + '.disqus.com/count.js';
+            (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+        }());
+    </script>
+        </body>
 </html>
