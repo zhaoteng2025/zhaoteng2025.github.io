@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0"><channel><title>小腾腾的小站 - 赵腾</title><link>/</link><description>记录技术，分享经验</description><lastBuildDate>Thu, 27 Mar 2025 16:00:00 +0800</lastBuildDate><item><title>关于 RAG、AI Agent、多模态的理解与探索</title><link>/2025/03/guan-yu-rag-ai-agent-duo-mo-tai-de-li-jie-yu-tan-suo.html</link><description>&lt;p&gt;&lt;img alt="27-1.png" src="../../../images/2025/03/27-1.png"&gt;&lt;/p&gt;
+&lt;h1&gt;简介&lt;/h1&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Agent 并非独立存在，而是依赖于其他技术的融合。
+首先是私域数据，它对 Agent 来说，保证了输入源的处理。如果输入源处理不 …&lt;/p&gt;&lt;/blockquote&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">赵腾</dc:creator><pubDate>Thu, 27 Mar 2025 16:00:00 +0800</pubDate><guid isPermaLink="false">tag:None,2025-03-27:/2025/03/guan-yu-rag-ai-agent-duo-mo-tai-de-li-jie-yu-tan-suo.html</guid><category>技术</category><category>编程</category><category>AI</category><category>Agent</category></item><item><title>Redis面试知识点</title><link>/2025/02/redismian-shi-zhi-shi-dian.html</link><description>&lt;h1&gt;简介&lt;/h1&gt;
+&lt;blockquote&gt;
+&lt;p&gt;关于Redis的面试题，我需要准备一些常见的题目和答案。首先，得确定用户的需求是什么，可能是在准备面试，所以需要覆盖基础到 …&lt;/p&gt;&lt;/blockquote&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">赵腾</dc:creator><pubDate>Thu, 06 Feb 2025 12:00:00 +0800</pubDate><guid isPermaLink="false">tag:None,2025-02-06:/2025/02/redismian-shi-zhi-shi-dian.html</guid><category>技术</category><category>编程</category><category>Cache</category></item><item><title>Spring Cloud Gateway 深度解析：路由、过滤与安全</title><link>/2024/11/spring-cloud-gateway-shen-du-jie-xi-lu-you-guo-lu-yu-an-quan.html</link><description>&lt;h1&gt;简介&lt;/h1&gt;
+&lt;p&gt;Spring Cloud Gateway 是微服务架构中的关键组件，用于管理微服务之间的流量。
+本文将深入解析 Spring Cloud Gateway 的核心功能，包括路由配置 …&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">赵腾</dc:creator><pubDate>Thu, 21 Nov 2024 12:00:00 +0800</pubDate><guid isPermaLink="false">tag:None,2024-11-21:/2024/11/spring-cloud-gateway-shen-du-jie-xi-lu-you-guo-lu-yu-an-quan.html</guid><category>技术</category><category>编程</category><category>Java</category><category>SpringCloud</category><category>微服务</category></item><item><title>Feign 客户端：简化微服务间通信的艺术</title><link>/2024/11/feign-ke-hu-duan-jian-hua-wei-fu-wu-jian-tong-xin-de-yi-zhu.html</link><description>&lt;h1&gt;简介&lt;/h1&gt;
+&lt;p&gt;随着微服务架构的普及，服务间的高效通信变得尤为重要。
+Feign 作为 Spring Cloud 生态系统中的声明式 HTTP 客户端，极大地简化了 …&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">赵腾</dc:creator><pubDate>Wed, 20 Nov 2024 18:00:00 +0800</pubDate><guid isPermaLink="false">tag:None,2024-11-20:/2024/11/feign-ke-hu-duan-jian-hua-wei-fu-wu-jian-tong-xin-de-yi-zhu.html</guid><category>技术</category><category>编程</category><category>Java</category><category>SpringCloud</category><category>微服务</category></item><item><title>带你快速写出简洁优秀的博客</title><link>/2024/11/dai-ni-kuai-su-xie-chu-jian-ji-you-xiu-de-bo-ke.html</link><description>&lt;h1&gt;简介&lt;/h1&gt;
+&lt;p&gt;本文介绍如何快速写出简洁优秀的博客。&lt;/p&gt;
+&lt;h1&gt;核心内容&lt;/h1&gt;
+&lt;p&gt;想写出简洁优秀的博客，必须包含以下几个部分：&lt;/p&gt;
+&lt;h2&gt;标题（Title）&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;主题明确 …&lt;/strong&gt;&lt;/li&gt;&lt;/ul&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">赵腾</dc:creator><pubDate>Mon, 18 Nov 2024 10:25:00 +0800</pubDate><guid isPermaLink="false">tag:None,2024-11-18:/2024/11/dai-ni-kuai-su-xie-chu-jian-ji-you-xiu-de-bo-ke.html</guid><category>生活记录</category><category>写作</category></item></channel></rss>
