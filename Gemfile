@@ -2,14 +2,10 @@
 
 source "https://rubygems.org"
 
-gem "jekyll", "~> 4.3.3"
-
-gem "csv"              # 修复 LoadError
-
 gem "jekyll-theme-chirpy", "~> 5.1", ">= 5.1.0"
 
 group :test do
-  gem "html-proofer", "~> 3.19.4"
+  gem "html-proofer", "~> 3.18"
 end
 
 # Windows and JRuby does not include zoneinfo files, so bundle the tzinfo-data gem
@@ -20,7 +16,7 @@ install_if -> { RUBY_PLATFORM =~ %r!mingw|mswin|java! } do
 end
 
 # Performance-booster for watching directories on Windows
-# gem "wdm", "~> 0.1.1", :install_if => Gem.win_platform?
+gem "wdm", "~> 0.1.1", :install_if => Gem.win_platform?
 
 # Jekyll <= 4.2.0 compatibility with Ruby 3.0
 gem "webrick", "~> 1.7"
