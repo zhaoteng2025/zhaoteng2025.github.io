@@ -1,7 +1,9 @@
-Title: 关于 RAG、AI Agent、多模态的理解与探索
-Date: 2025-03-27 16:00
-Category: 技术
-Tags: 编程, AI, Agent
+---
+layout: post
+title: 关于 RAG、AI Agent、多模态的理解与探索
+date: 2025-03-27 16:00
+tags: 编程, AI, Agent
+---
 
 ![27-1.png](../../../images/2025/03/27-1.png)
 # 简介

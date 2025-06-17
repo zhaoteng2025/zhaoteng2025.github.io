@@ -1,7 +1,9 @@
-Title: Spring Cloud Gateway 深度解析：路由、过滤与安全
-Date: 2024-11-21 12:00
-Category: 技术
-Tags: 编程, Java, SpringCloud, 微服务
+---
+layout: post
+title: Spring Cloud Gateway 深度解析：路由、过滤与安全
+date: 2024-11-21 12:00
+tags: 编程, Java, SpringCloud, 微服务
+---
 
 # 简介
 
