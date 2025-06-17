@@ -1,33 +1,32 @@
 ---
 layout: page
-title: 关于我 
+title: 关于我
 ---
 
-一个工作6年的 iOS SDK 开发者，在一家游戏公司做SDK开发和维护。
+我是一名 Java 开发者，拥有扎实的后端开发经验和良好的编程习惯。在工作中，我专注于使用 Java 及其生态技术构建稳定、高效的服务端应用。
 
-除了iOS技术，我还一直维护着这个博客，懂一些前端的基础知识。
+目前，我对人工智能（AI）产生了浓厚的兴趣，并正在系统地学习相关知识和技术。希望通过不断的学习与实践，能够将 AI 技术融合到现有的业务场景中，提升系统的智能化水平。
 
-平时喜欢用python写一些工具，能用工具做的事情坚决不用人工去操作。
+### 我的技术栈
 
-<h2> 我们的博客 </h2>  
+- 🧑‍💻 编程语言：Java, Python, SQL
+- 🛠️ 开发框架：Spring Boot, MyBatis, Hibernate
+- 🌐 后端技术：RESTful API, 微服务架构, 分布式系统
+- 🤖 AI 学习方向：RAG
+- 📊 工具与平台：Git, Maven, IntelliJ IDEA, TensorFlow, PyTorch
 
-这个博客是我们大家的，目前已经有很大一部分人在使用我的博客模板了，我也很高兴大家使用我的模板。
+### 我的博客
 
-如果你想搭建一个跟我一样的博客，可以看我的 
-<a href="/2016/10/jekyll_tutorials1/"> Jekyll 搭建个人博客 </a>
-教程
+这个博客是我记录学习、分享技术和总结经验的地方。如果你也对 Java 或 AI 感兴趣，欢迎关注我的更新！
 
+如果你想了解我是如何从 Java 转向 AI 领域的，请查看我的系列文章：
 
-有关于博客主题的建议和意见都可以提给我，让我们一起来打造一个精美的主题吧~ 
+- [《Java程序员的AI入门指南》](/ai/java-to-ai-guide)
 
-博客源码在 <a target="_blank" href='https://github.com/leopardpan/leopardpan.github.io/'>Github</a> 上，你的 Star 是我更新的动力，谢谢~
+博客源码托管在 GitHub 上：<a href="https://github.com/zhaoteng2025/zhaoteng2025.github.io" target="_blank">GitHub</a>，欢迎 Star 和交流！
 
+### 联系方式
 
-<h3> 搭建博客遇到了问题解法方法 </h3>  
+- 📧 邮箱：xttyx666@163.com
 
-查看 [技术支持](http://leopardpan.cn/support/) 需求帮助
-
-博客模板会一直持续更新，请持续关注我，谢谢~
-
-{% include comments.html %}
-
+ {% include comments.html %}

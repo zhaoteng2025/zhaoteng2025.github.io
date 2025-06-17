@@ -1,56 +1,54 @@
 ---
 layout: page
-title: 技术支持 
+title: 技术支持
 ---
 
-博客源码在 <a target="_blank" href='https://github.com/leopardpan/leopardpan.github.io/'>Github</a> 上，你的 Star 是我更新的动力，谢谢~
+博客源码托管在 GitHub 上：<a href="https://github.com/zhaoteng2025/zhaoteng2025.github.io" target="_blank">GitHub</a>，欢迎 Star 和交流！
 
+---
 
-遇到问题请先自行排查，可以直接在[Issues](https://github.com/leopardpan/leopardpan.github.io/issues)里面提问，不过回复的可能不及时。
+### 🛠️ 技术支持说明
 
-目前我已经给很多小伙伴做过单独的技术支持了，现在设置 `付费支持功能` 
+如果你在搭建或部署博客过程中遇到问题，可以参考以下方式获取帮助：
 
-<h3> 付费打赏技术支持 </h3>
+#### ✅ 免费支持
 
-如果你付费了，请邮件联系我，把付费的截图和你的QQ号一起发给我, 感谢你的赞助。
+- 遇到问题请先查看我的博客相关文章或 FAQ。
+- 你也可以在我的 GitHub 仓库的 [Issues](https://github.com/zhaoteng2025/zhaoteng2025.github.io/issues) 页面提问，我会尽量及时回复。
 
-你向我提问题我也要花时间帮你解答，付费多少看你自己的心意，`10、20块不嫌少`，`100、200块不嫌多`。
+---
 
-**注：** 付款后概不退款，拒绝扯皮，我的博客模板一直都是免费给大家使用。
+### ❓ 我能帮你解决的问题包括：
 
+- 使用 Jekyll 搭建个人博客过程中遇到的问题
+- Java 后端开发、Spring Boot 相关问题
+- AI 入门指导、学习路径规划、工具使用建议等
 
-<h3> 我能给你解答的问题有 </h3>
+---
 
-* Hexo 、Jekyll 搭建个人博客遇到的问题技术支持
-* 域名申请，DNS配置遇到的问题技术支持
-* 自建服务器部署个人博客，服务器配置
-* Nginx 反向代理、supervisor 守护进程
-* 域名备案、SSL证书配置
+### 👨‍💻 我的身份背景
 
-我可能不是所有的问题都能解答，但是我会带着你去学习，一起成长！
+我是一名经验丰富的 **Java 开发者**，专注于后端开发多年，并正在系统学习人工智能技术。  
+虽然我对博客搭建和前端知识有一定了解，但如果你有 Java 或 AI 相关问题，我也非常乐意与你交流探讨。
 
-<h3> 我是一个iOS开发者 </h3>
+---
 
-其实我是一个正正经经的iOS开发者, 并且一直在做 iOS 开发6年了。
+### ❤️ 感谢您的支持
 
-相对于搭建博客的问题，我iOS 技术会更专业。
+![](https://example.com/images/payimg/alipayimg.jpg)
+![](https://example.com/images/payimg/weipayimg.jpg)
 
-如果有关于iOS的问题我们也可以一起讨论
+> 注：请将上面的图片链接替换为你自己的收款二维码地址
 
+---
 
-<h3> 感谢您的打赏 </h3> 
+### 📬 如何联系我？
 
-![](/images/payimg/alipayimg.jpg)
+- 📧 Email：xttyx666@163.com  
+- 💬 微信：zhaotengjason
+- 🐦 Twitter：[@yourtwitter](https://twitter.com/yourtwitter) （可选）
+- 🖥️ GitHub：[https://github.com/zhaoteng2025](https://github.com/zhaoteng2025)
 
-![](/images/payimg/weipayimg.jpg)
-
-<h3> 如何联系到我 </h3>
-
-<p> 
-email：leoparpan@icloud.com       
-<p> 
-qq: 1499065178     
-<p> 
+---
 
 {% include comments.html %}
-
